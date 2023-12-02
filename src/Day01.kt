@@ -3,46 +3,51 @@ import java.lang.NumberFormatException
 fun main() {
     fun part1(input: List<String>): Int {
         var sum = 0
-        val numberRegex = Regex("""^\D*(\d).*?(\d?)\D*${'$'}""")
+        val numberRegex = Regex("""^\D*(\d).*?(\d)?\D*${'$'}""")
         input.forEach { line ->
-            numberRegex.matchEntire(line).let{ matchResult ->
-                if (matchResult == null) {
-                    println("Couldn't find numbers in $line")
+            val matchResult = numberRegex.matchEntire(line)
+            if (matchResult == null) {
+                println("Couldn't find numbers in $line")
+            } else {
+                val numString = if (matchResult.groupValues[2].isEmpty()) {
+                    matchResult.groupValues[1] + matchResult.groupValues[1]
                 } else {
-                    val numString = if (matchResult.groupValues[2].isEmpty()) {
-                        matchResult.groupValues[1] + matchResult.groupValues[1]
-                    } else {
-                        matchResult.groupValues[1] + matchResult.groupValues[2]
-                    }
-                    sum += numString.toInt()
+                    matchResult.groupValues[1] + matchResult.groupValues[2]
                 }
-
+                sum += numString.toInt()
             }
-
-
         }
         return sum
     }
 
+    val numMap = mapOf(
+        "1" to 1,
+        "one" to 1,
+        "2" to 2,
+        "two" to 2,
+        "3" to 3,
+        "three" to 3,
+        "4" to 4,
+        "four" to 4,
+        "5" to 5,
+        "five" to 5,
+        "6" to 6,
+        "six" to 6,
+        "7" to 7,
+        "seven" to 7,
+        "8" to 8,
+        "eight" to 8,
+        "9" to 9,
+        "nine" to 9
+    )
     fun String.toNumber(): Int {
-        return when(this) {
-            "1", "one" -> 1
-            "2", "two" -> 2
-            "3", "three" -> 3
-            "4", "four" -> 4
-            "5", "five" -> 5
-            "6", "six" -> 6
-            "7", "seven" -> 7
-            "8", "eight" -> 8
-            "9", "nine" -> 9
-            "0", "zero" -> 0
-            else -> throw NumberFormatException("$this is not a number")
+        return numMap.getOrElse(this) {throw NumberFormatException("$this is not a number")
         }
     }
 
     fun part2(input: List<String>): Int {
         var sum = 0
-        val numberRegex = Regex("""\d|one|two|three|four|five|six|seven|eight|nine|zero""", option=RegexOption.IGNORE_CASE)
+        val numberRegex = Regex("""\d|one|two|three|four|five|six|seven|eight|nine""")
         input.forEach { line ->
             val firstMatch = numberRegex.find(line)
             if (firstMatch != null) {
@@ -68,6 +73,12 @@ fun main() {
     check(part2(test2Input) == 342)
 
     val input = readInput("Day01")
-    part1(input).println()
-    part2(input).println()
+    part1(input).let {
+        it.println()
+        check(it == 53386)
+    }
+    part2(input).let{
+        it.println()
+        check(it == 53312)
+    }
 }
